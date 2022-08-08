@@ -1,1 +1,4 @@
-/html/
+pkg/
+\.lock$
+spec/\.status
+

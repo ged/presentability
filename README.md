@@ -15,7 +15,51 @@ docs
 
 ## Description
 
+Facade-based presenters with minimal assumptions. This library contains
+utilities for setting up presenters for data classes for things like web
+services, logging output, etc.
 
+It is intended to be dead-simple by default, returning a Hash containing
+only the attributes you have intentionally exposed from the subject.
+
+    # lib/acme/widget.rb
+    class Acme::Widget
+      attr_accessor :sku,
+        :name,
+        :unit_price,
+        :internal_cost,
+        :inventory_count
+    end
+
+    # lib/acme/presenters.rb
+    module Acme::Presenters
+      extend Presentability
+      
+      presenter_for Acme::Widget do
+        expose :sku
+        expose :name
+        expose :unit_price
+      end
+    end
+
+    # lib/acme/service.rb
+    class Acme::Service < Some::Webservice::Framework
+    
+      on '/api/widgets/<sku>' do |sku|
+        widget = Acme::Widget.lookup( sku )
+        content_type 'application/json'
+        representation = Acme::Presenters.present( widget )
+        return representation.to_json
+      end
+    
+    end
+
+Note that Presentability doesn't do any encoding for you, or infer anything, or
+require that you alter your data classes. It's just a collection of Facades for
+your data objects that return a limited representation of their subjects.
+
+More details can be found in the docs for the Presentability module, and in
+Presentability::Presenter.
 
 
 ## Prerequisites
@@ -34,11 +78,12 @@ You can check out the current development source with Mercurial via its
 [project page](http://bitbucket.org/ged/presentability). Or if you prefer Git, via
 [its Github mirror](https://github.com/ged/presentability).
 
-After checking out the source, run:
+After checking out the source and changing into the resulting directory, run:
 
+    $ gem install -Ng
     $ rake setup
 
-This task will install dependencies, and do any other necessary setup for development.
+This will install dependencies, and do any other necessary setup for development.
 
 
 ## Authors
