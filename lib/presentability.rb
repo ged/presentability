@@ -33,15 +33,17 @@ module Presentability
 	### Set up a presentation for the given +entity_class+.
 	def presenter_for( entity_class, &block )
 		presenter_class = Class.new( Presentability::Presenter )
-		presenter_class.instance_eval( &block )
+		presenter_class.module_eval( &block )
 
 		self.presenters[ entity_class ] = presenter_class
 	end
 
 
 	### Return a representation of the +object+ by applying a declared presentation.
-	def present( object )
-		representation = self.present_by_class( object )
+	def present( object, **options )
+		representation = self.present_by_class( object, **options ) ||
+			self.present_by_classname( object, **options ) or
+			raise NoMethodError, "no presenter found for %p" % [ object ]
 
 		return representation
 	end
@@ -49,9 +51,20 @@ module Presentability
 
 	### Return a representation of the +object+ by applying a presenter declared for its
 	### class. Returns +nil+ if no such presenter exists.
-	def present_by_class( object )
+	def present_by_class( object, **presentation_options )
 		presenter_class = self.presenters[ object.class ] or return nil
-		presenter = presenter_class.new( object )
+		presenter = presenter_class.new( object, **presentation_options )
+
+		return presenter.apply
+	end
+
+
+	### Return a representation of the +object+ by applying a presenter declared for its
+	### class name. Returns +nil+ if no such presenter exists.
+	def present_by_classname( object, **presentation_options )
+		classname = object.class.name or return nil
+		presenter_class = self.presenters[ classname ] or return nil
+		presenter = presenter_class.new( object, **presentation_options )
 
 		return presenter.apply
 	end
