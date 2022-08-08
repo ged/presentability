@@ -3,5 +3,6 @@ LICENSE.txt
 README.md
 lib/presentability.rb
 lib/presentability/presenter.rb
+spec/presentability/presenter_spec.rb
 spec/presentability_spec.rb
 spec/spec_helper.rb
