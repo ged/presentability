@@ -1,4 +1,6 @@
 pkg/
+docs/
 \.lock$
 spec/\.status
+\.gem$
 
