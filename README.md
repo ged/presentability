@@ -22,14 +22,9 @@ services, logging output, etc.
 It is intended to be dead-simple by default, returning a Hash containing
 only the attributes you have intentionally exposed from the subject.
 
-    # lib/acme/widget.rb
-    class Acme::Widget
-      attr_accessor :sku,
-        :name,
-        :unit_price,
-        :internal_cost,
-        :inventory_count
-    end
+The most basic usage looks something like this:
+
+    require 'presentatbility'
 
     # lib/acme/presenters.rb
     module Acme::Presenters
@@ -45,7 +40,7 @@ only the attributes you have intentionally exposed from the subject.
     # lib/acme/service.rb
     class Acme::Service < Some::Webservice::Framework
     
-      on '/api/widgets/<sku>' do |sku|
+      get '/api/widgets/<sku>' do |sku|
         widget = Acme::Widget.lookup( sku )
         content_type 'application/json'
         representation = Acme::Presenters.present( widget )

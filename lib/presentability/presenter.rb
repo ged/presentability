@@ -5,7 +5,39 @@ require 'loggability'
 
 require 'presentability' unless defined?( Presentability )
 
-
+#
+# A presenter (facade) base class.
+#
+# When you declare a presenter in a Presentability collection, the result is a
+# subclass of Presentability::Presenter. The main way of defining a Presenter's
+# functionality is via the ::expose method, which marks an attribute of the underlying
+# entity object (the "subject") for exposure.
+#
+# ```ruby
+# class MyPresenter < Presentability::Presenter
+#   expose :name
+# end
+#
+# # Assuming `entity_object' has a "name" attribute...
+# presenter = MyPresenter.new( entity_object )
+# presenter.apply
+# # => { :name => "entity name" }
+# ```
+#
+# Setting up classes like this manually is one option, but Presentability also lets you
+# set them up as a collection, which is what further examples will assume for brevity:
+#
+# ```ruby
+# module MyPresenters
+#   extend Presentability
+#
+#   presenter_for( EntityObject ) do
+#     expose :name
+#   end
+#
+# end
+# ```
+#
 class Presentability::Presenter
 	extend Loggability
 
@@ -66,13 +98,6 @@ class Presentability::Presenter
 	attr_reader :options
 
 
-	### Return a new instance of whatever object type will be used to represent the
-	### subject.
-	def empty_representation
-		return {}
-	end
-
-
 	### Apply the exposures to the subject and return the result.
 	def apply
 		result = self.empty_representation
@@ -101,6 +126,23 @@ class Presentability::Presenter
 	end
 
 
+	### Return a human-readable representation of the object suitable for debugging.
+	def inspect
+		return "#<Presentability::Presenter:%#0x for %p>" % [ self.object_id / 2, self.subject ]
+	end
+
+
+	#########
+	protected
+	#########
+
+	### Return a new instance of whatever object type will be used to represent the
+	### subject.
+	def empty_representation
+		return {}
+	end
+
+
 	### Attempt to expose the attribute with the given +name+ via delegation to the
 	### subject's method of the same name. Returns +nil+ if no such method exists.
 	def expose_via_delegation( name, options={} )
@@ -121,12 +163,6 @@ class Presentability::Presenter
 
 		meth = self.method( name )
 		return meth.call
-	end
-
-
-	### Return a human-readable representation of the object suitable for debugging.
-	def inspect
-		return "#<Presentability::Presenter:%#0x for %p>" % [ self.object_id / 2, self.subject ]
 	end
 
 end # class Presentability::Presenter
