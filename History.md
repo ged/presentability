@@ -1,4 +1,8 @@
-## v0.0.1 [YYYY-MM-DD] Michael Granger <ged@FaerieMUD.org>
+# Release History for presentability
+
+---
+
+## v0.1.0 [2022-08-11] Michael Granger <ged@faeriemud.org>
 
 Initial release.
 
