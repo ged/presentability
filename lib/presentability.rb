@@ -54,6 +54,13 @@ require 'loggability'
 # (the "subject"), and then applying it:
 #
 # ```ruby
+# acme_widget = Acme::Widget.new(
+#   sku: "FF-2237H455",
+#   name: "Throbbing Frobnulator",
+#   unit_price: 299,
+#   inventory_count: 301,
+#   wholesale_cost: 39
+# )
 # presenter = Acme::Presenters.present( acme_widget )
 # presenter.apply
 # # => { :sku => "FF-2237H455", :name => "Throbbing Frobnulator", :unit_price => 299 }
@@ -101,6 +108,13 @@ module Presentability
 			raise NoMethodError, "no presenter found for %p" % [ object ]
 
 		return representation
+	end
+
+
+	### Return an Array of all representations of the members of the
+	### +collection+ by applying a declared presentation.
+	def present_collection( collection, **options )
+		return collection.map {|object| self.present(object, **options) }
 	end
 
 

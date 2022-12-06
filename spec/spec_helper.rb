@@ -4,6 +4,11 @@
 require 'simplecov' if ENV['COVERAGE']
 
 require 'rspec'
+require 'i18n'
+require 'faker'
+
+Faker::Config.locale = 'en'
+I18n.reload!
 
 require 'loggability/spechelpers'
 
