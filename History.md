@@ -1,6 +1,14 @@
 # Release History for presentability
 
 ---
+## v0.3.0 [2022-12-16] Michael Granger <ged@faeriemud.org>
+
+Improvements:
+
+- Rework to use a more flexible exposure mechanism
+  - Allows `nil` and `false` as exposed values
+  - Allows declaring an exposure with a block
+
 
 ## v0.2.0 [2022-12-06] Michael Granger <ged@faeriemud.org>
 
