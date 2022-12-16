@@ -37,14 +37,22 @@ RSpec.describe Presentability do
 				@lastname = lastname
 				@email = email
 				@password = password
+				@is_admin = false
 			end
 
-			attr_accessor :firstname, :lastname, :email, :password
+			attr_accessor :firstname, :lastname, :email, :password, :is_admin
 		end
 	end
 
 	let( :entity_instance ) { entity_class.new }
-	let( :other_entity_instance ) { entity_class.new }
+	let( :other_entity_instance ) do
+		other_entity_class.new(
+			Faker::Name.first_name,
+			Faker::Name.last_name,
+			Faker::Internet.email,
+			Faker::Internet.password
+		)
+	end
 
 
 	describe "an extended module" do
@@ -75,7 +83,7 @@ RSpec.describe Presentability do
 		end
 
 
-		it "can effect more complex exposures be declaring presenter methods" do
+		it "can define more complex exposures by declaring presenter methods" do
 			extended_module.presenter_for( entity_class ) do
 				expose :foo
 				expose :bar
@@ -88,6 +96,56 @@ RSpec.describe Presentability do
 
 			expect( extended_module.present(entity_instance) ).
 				to eq({ foo: 1, bar: 'two', id: entity_instance.object_id })
+		end
+
+
+		it "calls an exposure's block if it has one" do
+			extended_module.presenter_for( entity_class ) do
+				expose :foo
+				expose :bar
+				expose :id do
+					self.subject.object_id
+				end
+			end
+
+			expect( extended_module.present(entity_instance) ).
+				to eq({ foo: 1, bar: 'two', id: entity_instance.object_id })
+		end
+
+
+		it "exposes `false' values correctly" do
+			extended_module.presenter_for( other_entity_class ) do
+				expose :firstname
+				expose :lastname
+				expose :email
+				expose :is_admin
+			end
+
+			other_entity_instance.is_admin = false
+
+			expect( extended_module.present(other_entity_instance) ).to eq({
+				firstname: other_entity_instance.firstname,
+				lastname: other_entity_instance.lastname,
+				email: other_entity_instance.email,
+				is_admin: false
+			})
+		end
+
+
+		it "exposes `nil' values correctly" do
+			extended_module.presenter_for( other_entity_class ) do
+				expose :firstname
+				expose :lastname
+				expose :email
+			end
+
+			other_entity_instance.email = nil
+
+			expect( extended_module.present(other_entity_instance) ).to eq({
+				firstname: other_entity_instance.firstname,
+				lastname: other_entity_instance.lastname,
+				email: nil
+			})
 		end
 
 
@@ -119,8 +177,9 @@ RSpec.describe Presentability do
 
 			expect {
 				extended_module.present( entity_instance )
-			}.to raise_error( NoMethodError, /can't expose :id -- no such attribute exists/i )
+			}.to raise_error( NoMethodError, /undefined method `id'/i )
 		end
+
 
 
 		describe "collection handling" do

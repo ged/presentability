@@ -69,13 +69,49 @@ class Presentability::Presenter
 
 	### Set up an exposure that will delegate to the attribute of the subject with
 	### the given +name+.
-	def self::expose( name, **options )
+	def self::expose( name, **options, &block )
+		name = name.to_sym
 		options = DEFAULT_EXPOSURE_OPTIONS.merge( options )
 
-		self.log.debug "Setting up exposure %p %p" % [ name, options ]
+		self.define_method( name, &block ) if block
+
+		unless self.instance_methods( true ).include?( name )
+			method_body = self.generate_expose_method( name, **options )
+			define_method( name, &method_body )
+		end
+
+		self.log.debug "Setting up exposure %p, options = %p" % [ name, options ]
 		self.exposures[ name ] = options
 	end
 
+
+	### Generate the body an exposure method that delegates to a method with the
+	### same +name+ on its subject.
+	def self::generate_expose_method( name, **options )
+		self.log.debug "Generating a default delegation exposure method for %p" % [ name ]
+		return lambda do
+			return self.subject.send( __method__ )
+		end
+	end
+
+
+	### Method definition hook -- hook up new methods with the same name as an exposure
+	### to its :call option.
+	def self::method_added( method_name )
+		super
+
+		return unless self.exposures
+
+		if self.exposures.key?( method_name )
+			self.log.debug "Exposing %p via a new presenter method." % [ method_name ]
+			self.exposures[ method_name ][ :call ] = self.instance_method( method_name )
+		end
+	end
+
+
+	#
+	# Instance methods
+	#
 
 	### Create a new Presenter for the given +subject+.
 	def initialize( subject, options={} )
@@ -104,11 +140,7 @@ class Presentability::Presenter
 
 		self.class.exposures.each do |name, exposure_options|
 			next if self.skip_exposure?( name )
-
-			value = self.expose_via_delegation( name, exposure_options ) ||
-				self.expose_via_presenter_method( name, exposure_options ) or
-				raise NoMethodError, "can't expose %p -- no such attribute exists" % [name]
-
+			value = self.method( name ).call
 			result[ name.to_sym ] = value
 		end
 
@@ -142,28 +174,6 @@ class Presentability::Presenter
 		return {}
 	end
 
-
-	### Attempt to expose the attribute with the given +name+ via delegation to the
-	### subject's method of the same name. Returns +nil+ if no such method exists.
-	def expose_via_delegation( name, options={} )
-		self.log.debug "Trying to expose %p via delegation to %p" % [ name, self.subject ]
-
-		return nil unless self.subject.respond_to?( name )
-
-		return self.subject.send( name )
-	end
-
-
-	### Attempt to expose the attribute with the given +name+ via a method on the presenter
-	### of the same name. Returns +nil+ if no such method exists.
-	def expose_via_presenter_method( name, options={} )
-		self.log.debug "Trying to expose %p via presenter method" % [ name ]
-
-		return nil unless self.respond_to?( name )
-
-		meth = self.method( name )
-		return meth.call
-	end
 
 end # class Presentability::Presenter
 
