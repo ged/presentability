@@ -260,6 +260,24 @@ RSpec.describe Presentability do
 				end
 			end
 
+
+			it "sets the :in_collection option to allow for eliding attributes" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+					expose :bar, unless: :in_collection
+					expose :baz
+				end
+
+				results = extended_module.present_collection( [entity_instance] )
+
+				expect( results.first ).to include( :foo, :baz )
+				expect( results.first ).not_to include( :bar )
+
+				result = extended_module.present( entity_instance )
+
+				expect( result ).to include( :foo, :bar, :baz )
+			end
+
 		end
 
 	end

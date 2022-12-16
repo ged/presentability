@@ -114,6 +114,7 @@ module Presentability
 	### Return an Array of all representations of the members of the
 	### +collection+ by applying a declared presentation.
 	def present_collection( collection, **options )
+		options = options.merge( in_collection: true )
 		return collection.map {|object| self.present(object, **options) }
 	end
 
