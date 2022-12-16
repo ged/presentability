@@ -21,7 +21,7 @@ RSpec.describe( Presentability::Presenter ) do
 	end
 
 
-	describe "a concrete subclass" do
+	describe "concrete subclass" do
 
 		let( :subclass ) { Class.new(described_class) }
 

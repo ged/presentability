@@ -5,39 +5,7 @@ require 'loggability'
 
 require 'presentability' unless defined?( Presentability )
 
-#
-# A presenter (facade) base class.
-#
-# When you declare a presenter in a Presentability collection, the result is a
-# subclass of Presentability::Presenter. The main way of defining a Presenter's
-# functionality is via the ::expose method, which marks an attribute of the underlying
-# entity object (the "subject") for exposure.
-#
-# ```ruby
-# class MyPresenter < Presentability::Presenter
-#   expose :name
-# end
-#
-# # Assuming `entity_object' has a "name" attribute...
-# presenter = MyPresenter.new( entity_object )
-# presenter.apply
-# # => { :name => "entity name" }
-# ```
-#
-# Setting up classes like this manually is one option, but Presentability also lets you
-# set them up as a collection, which is what further examples will assume for brevity:
-#
-# ```ruby
-# module MyPresenters
-#   extend Presentability
-#
-#   presenter_for( EntityObject ) do
-#     expose :name
-#   end
-#
-# end
-# ```
-#
+# :include: Presenter.md
 class Presentability::Presenter
 	extend Loggability
 

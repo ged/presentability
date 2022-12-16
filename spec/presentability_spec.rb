@@ -55,7 +55,7 @@ RSpec.describe Presentability do
 	end
 
 
-	describe "an extended module" do
+	describe "when used to extend a module" do
 
 		let( :extended_module ) do
 			mod = Module.new
@@ -182,9 +182,9 @@ RSpec.describe Presentability do
 
 
 
-		describe "collection handling" do
+		describe "and used to present a collection" do
 
-			it "can present a collection" do
+			it "handles a homogeneous collection" do
 				extended_module.presenter_for( entity_class ) do
 					expose :foo
 					expose :bar
@@ -203,7 +203,7 @@ RSpec.describe Presentability do
 			end
 
 
-			it "can present a mixed collection" do
+			it "handles a hetergeneous collection" do
 				extended_module.presenter_for( entity_class ) do
 					expose :foo
 					expose :bar
