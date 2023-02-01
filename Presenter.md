@@ -93,3 +93,17 @@ or conditional exposures:
       end
     
     end
+
+
+### Exposure Aliases
+
+If you want to expose a field but use a different name in the resulting data structure, you can use the `:as` option in the exposure declaration:
+
+    presenter_for( LogEvent ) do
+      expose :timestamp, as: :created_at
+    end
+
+    presenter = MyPresenter.new( log_event )
+    presenter.apply
+    # => { :created_at => '2023-02-01 12:34:02.155365 -0800' }
+

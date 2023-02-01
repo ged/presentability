@@ -1,5 +1,4 @@
 # -*- ruby -*-
-# frozen_string_literal: true
 
 require_relative 'spec_helper'
 
@@ -180,6 +179,34 @@ RSpec.describe Presentability do
 			}.to raise_error( NoMethodError, /undefined method `id'/i )
 		end
 
+
+		it "can alias a field to a different name" do
+			extended_module.presenter_for( entity_class ) do
+				expose :foo, as: :bar
+			end
+
+			expect( extended_module.present(entity_instance) ).to eq({ bar: 1 })
+		end
+
+
+		it "doesn't error when aliasing a field to itself" do
+			extended_module.presenter_for( entity_class ) do
+				expose :foo, as: :foo
+				expose :bar, as: :floom
+			end
+
+			expect( extended_module.present(entity_instance) ).to eq({ foo: 1, floom: 'two' })
+		end
+
+
+		it "raises if an alias clobbers another field" do
+			expect {
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+					expose :bar, as: :foo
+				end
+			}.to raise_error( ScriptError, /alias :foo collides with another exposure/i )
+		end
 
 
 		describe "and used to present a collection" do

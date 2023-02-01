@@ -1,5 +1,4 @@
 # -*- ruby -*-
-# frozen_string_literal: true
 
 require 'loggability'
 
@@ -31,6 +30,7 @@ class Presentability::Presenter
 
 
 	##
+	# :singleton-method: exposures
 	# The Hash of exposures declared by this class
 	singleton_class.attr_accessor :exposures
 
@@ -46,6 +46,10 @@ class Presentability::Presenter
 		unless self.instance_methods( true ).include?( name )
 			method_body = self.generate_expose_method( name, **options )
 			define_method( name, &method_body )
+		end
+
+		if (exposure_alias = options[:as]) && self.exposures.key?( exposure_alias )
+			raise ScriptError, "alias %p collides with another exposure" % [ exposure_alias ]
 		end
 
 		self.log.debug "Setting up exposure %p, options = %p" % [ name, options ]
@@ -109,7 +113,8 @@ class Presentability::Presenter
 		self.class.exposures.each do |name, exposure_options|
 			next if self.skip_exposure?( name )
 			value = self.method( name ).call
-			result[ name.to_sym ] = value
+			key = exposure_options.key?( :as ) ? exposure_options[:as] : name
+			result[ key.to_sym ] = value
 		end
 
 		return result

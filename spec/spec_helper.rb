@@ -1,7 +1,13 @@
 # -*- ruby -*-
-# frozen_string_literal: true
 
-require 'simplecov' if ENV['COVERAGE']
+if ENV['COVERAGE']
+	require 'simplecov'
+	SimpleCov.start do
+		add_filter 'spec/'
+		enable_coverage :branch
+		primary_coverage :branch
+	end
+end
 
 require 'rspec'
 require 'i18n'
