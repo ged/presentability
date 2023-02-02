@@ -1,6 +1,13 @@
 # Release History for presentability
 
 ---
+## v0.4.0 [2023-02-02] Michael Granger <ged@faeriemud.org>
+
+Improvements:
+
+- Add presentation aliases.
+
+
 ## v0.3.0 [2022-12-16] Michael Granger <ged@faeriemud.org>
 
 Improvements:
