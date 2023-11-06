@@ -40,6 +40,7 @@ module Presentability
 
 	### Return a representation of the +object+ by applying a declared presentation.
 	def present( object, **options )
+		return object if object.instance_variables.empty?
 		representation = self.present_by_class( object, **options ) ||
 			self.present_by_classname( object, **options ) or
 			raise NoMethodError, "no presenter found for %p" % [ object ]
@@ -66,7 +67,7 @@ module Presentability
 		presenter_class = self.presenters[ object.class ] or return nil
 		presenter = presenter_class.new( object, **presentation_options )
 
-		return presenter.apply
+		return presenter.apply( self )
 	end
 
 
@@ -77,7 +78,7 @@ module Presentability
 		presenter_class = self.presenters[ classname ] or return nil
 		presenter = presenter_class.new( object, **presentation_options )
 
-		return presenter.apply
+		return presenter.apply( self )
 	end
 
 end # module Presentability

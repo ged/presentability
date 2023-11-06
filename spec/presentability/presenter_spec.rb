@@ -9,7 +9,18 @@ require 'presentability/presenter'
 RSpec.describe( Presentability::Presenter ) do
 
 	let( :presenter_subject ) do
-		OpenStruct.new( country: 'Philippines', export: 'Copper', flower: 'Sampaguita' )
+		OpenStruct.new(
+			country: 'Philippines',
+			export: 'Copper',
+			flower: 'Sampaguita',
+			cities: ['Quezon City', 'Cagayan de Oro', 'Roxas']
+		)
+	end
+
+	let( :presenters ) do
+		mod = Module.new
+		mod.extend( Presentability )
+		return mod
 	end
 
 
@@ -27,7 +38,7 @@ RSpec.describe( Presentability::Presenter ) do
 
 		it "can be created with just a subject" do
 			presenter = subclass.new( presenter_subject )
-			expect( presenter.apply ).to eq( {} )
+			expect( presenter.apply(presenters) ).to eq( {} )
 		end
 
 
@@ -35,7 +46,7 @@ RSpec.describe( Presentability::Presenter ) do
 			subclass.expose( :country )
 			presenter = subclass.new( presenter_subject )
 
-			expect( presenter.apply ).to eq({ country: 'Philippines' })
+			expect( presenter.apply(presenters) ).to eq({ country: 'Philippines' })
 		end
 
 
@@ -47,9 +58,9 @@ RSpec.describe( Presentability::Presenter ) do
 			financial_presenter = subclass.new( presenter_subject, financial: true )
 			cultural_presenter = subclass.new( presenter_subject, financial: false )
 
-			expect( financial_presenter.apply ).
+			expect( financial_presenter.apply(presenters) ).
 				to eq({ country: 'Philippines', export: 'Copper' })
-			expect( cultural_presenter.apply ).
+			expect( cultural_presenter.apply(presenters) ).
 				to eq({ country: 'Philippines', flower: 'Sampaguita' })
 		end
 
@@ -83,6 +94,14 @@ RSpec.describe( Presentability::Presenter ) do
 			presenter = subclass.new( presenter_subject )
 
 			expect( presenter.skip_exposure?(:bus_schedule) ).to be_truthy
+		end
+
+
+		it "can expose an attribute as a collection" do
+			subclass.expose( :country )
+			subclass.expose_collection( :cities )
+
+			expect( subclass.exposures[:cities] ).to include( unless: :in_collection )
 		end
 
 

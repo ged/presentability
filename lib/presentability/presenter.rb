@@ -57,6 +57,14 @@ class Presentability::Presenter
 	end
 
 
+	### Set up an exposure of a collection with the given +name+. This means it will
+	### have the :in_collection option set by default.
+	def self::expose_collection( name, **options, &block )
+		options = options.merge( unless: :in_collection )
+		self.expose( name, **options, &block )
+	end
+
+
 	### Generate the body an exposure method that delegates to a method with the
 	### same +name+ on its subject.
 	def self::generate_expose_method( name, **options )
@@ -107,12 +115,14 @@ class Presentability::Presenter
 
 
 	### Apply the exposures to the subject and return the result.
-	def apply
+	def apply( presenters )
 		result = self.empty_representation
 
 		self.class.exposures.each do |name, exposure_options|
 			next if self.skip_exposure?( name )
 			value = self.method( name ).call
+			value = presenters.present( value, **exposure_options ) unless
+				value.is_a?( result.class )
 			key = exposure_options.key?( :as ) ? exposure_options[:as] : name
 			result[ key.to_sym ] = value
 		end

@@ -43,6 +43,23 @@ RSpec.describe Presentability do
 		end
 	end
 
+	let( :complex_entity_class ) do
+		Class.new do
+			def self::name
+				return 'Acme::Pair'
+			end
+
+			def initialize( user:, entity:, overridden: false, locked: true )
+				@user = user
+				@entity = entity
+				@overridden = overridden
+				@locked = locked
+			end
+
+			attr_accessor :user, :entity, :overridden, :locked
+		end
+	end
+
 	let( :entity_instance ) { entity_class.new }
 	let( :other_entity_instance ) do
 		other_entity_class.new(
@@ -51,6 +68,9 @@ RSpec.describe Presentability do
 			Faker::Internet.email,
 			Faker::Internet.password
 		)
+	end
+	let( :complex_entity_instance ) do
+		complex_entity_class.new( user: other_entity_instance, entity: entity_instance )
 	end
 
 
@@ -162,6 +182,24 @@ RSpec.describe Presentability do
 		end
 
 
+		it "doesn't try to present immediate objects" do
+			object = 'a string'
+			expect( extended_module.present(object) ).to be( object )
+
+			object = 8
+			expect( extended_module.present(object) ).to be( object )
+
+			object = :a_symbol
+			expect( extended_module.present(object) ).to be( object )
+
+			object = Time.now
+			expect( extended_module.present(object) ).to be( object )
+
+			object = %[an array of strings]
+			expect( extended_module.present(object) ).to be( object )
+		end
+
+
 		it "errors usefully if asked to present an object it knows nothing about" do
 			expect {
 				extended_module.present( entity_instance )
@@ -230,7 +268,7 @@ RSpec.describe Presentability do
 			end
 
 
-			it "handles a hetergeneous collection" do
+			it "handles a heterogeneous collection" do
 				extended_module.presenter_for( entity_class ) do
 					expose :foo
 					expose :bar
@@ -303,6 +341,43 @@ RSpec.describe Presentability do
 				result = extended_module.present( entity_instance )
 
 				expect( result ).to include( :foo, :bar, :baz )
+			end
+
+		end
+
+
+		describe "and used to present a complex object" do
+
+			it "uses registered presenters for sub-objects" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+					expose :bar
+				end
+				extended_module.presenter_for( other_entity_class ) do
+					expose :firstname
+					expose :lastname
+					expose :email
+				end
+				extended_module.presenter_for( complex_entity_class ) do
+					expose :user
+					expose :entity
+					expose :locked
+				end
+
+				result = extended_module.present( complex_entity_instance )
+
+				expect( result ).to eq({
+					user: {
+						firstname: other_entity_instance.firstname,
+						lastname: other_entity_instance.lastname,
+						email: other_entity_instance.email,
+					},
+					entity: {
+						foo: entity_instance.foo,
+						bar: entity_instance.bar
+					},
+					locked: complex_entity_instance.locked,
+				})
 			end
 
 		end
