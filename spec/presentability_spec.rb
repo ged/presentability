@@ -182,7 +182,7 @@ RSpec.describe Presentability do
 		end
 
 
-		it "doesn't try to present immediate objects" do
+		it "doesn't try to present objects with no instance variables by default" do
 			object = 'a string'
 			expect( extended_module.present(object) ).to be( object )
 
@@ -197,6 +197,24 @@ RSpec.describe Presentability do
 
 			object = %[an array of strings]
 			expect( extended_module.present(object) ).to be( object )
+
+			object = Object.new
+			expect( extended_module.present(object) ).to be( object )
+		end
+
+
+		it "allows presenters to be defined for objects with no instance variables" do
+			extended_module.presenter_for( Time ) do
+				expose :sec
+				expose :usec
+			end
+
+			object = Time.at( 1699287281.336554 )
+
+			expect( extended_module.present(object) ).to eq({
+				sec: object.sec,
+				usec: object.usec
+			})
 		end
 
 
