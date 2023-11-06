@@ -9,7 +9,7 @@ module Presentability
 
 
 	# Package version
-	VERSION = '0.4.0'
+	VERSION = '0.5.0'
 
 
 	# Automatically load subordinate components

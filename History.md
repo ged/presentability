@@ -1,6 +1,14 @@
 # Release History for presentability
 
 ---
+## v0.5.0 [2023-11-06] Michael Granger <ged@faeriemud.org>
+
+Improvements:
+
+- Add recursive presentation
+- Allow presenters to be defined for objects with no instance variables
+
+
 ## v0.4.0 [2023-02-02] Michael Granger <ged@faeriemud.org>
 
 Improvements:
