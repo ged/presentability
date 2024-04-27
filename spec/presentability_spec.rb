@@ -262,6 +262,34 @@ RSpec.describe Presentability do
 			end
 
 
+			it "automatically sets :in_collection for sub-Arrays" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+					expose :bar, unless: :in_collection
+					expose :baz
+				end
+
+				results = extended_module.present( [entity_instance] )
+
+				expect( results.first ).to include( :foo, :baz )
+				expect( results.first ).not_to include( :bar )
+			end
+
+
+			it "automatically sets :in_collection for sub-Hashes" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+					expose :bar, unless: :in_collection
+					expose :baz
+				end
+
+				results = extended_module.present( {result: entity_instance} )
+
+				expect( results[:result] ).to include( :foo, :baz )
+				expect( results[:result] ).not_to include( :bar )
+			end
+
+
 			it "can be defined by class for objects that have a simple presentation" do
 				extended_module.serializer_for( IPAddr, :to_s )
 

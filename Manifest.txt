@@ -1,8 +1,6 @@
 GettingStarted.md
 History.md
 LICENSE.txt
-Presentability.md
-Presenter.md
 README.md
 lib/presentability.rb
 lib/presentability/presenter.rb

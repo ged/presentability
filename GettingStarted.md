@@ -136,10 +136,10 @@ In the representation, the `#legal_entity` method will be called on the `Company
 You can make an exposure conditional on an option being passed or not:
 
 ```ruby
-# Don't include the price if presented with `public: true` option is set
+# Don't include the price if presented with `public: true` option set
 expose :price, unless: :public
 
-# Only include the settings if presented with `detailed: true` option is set
+# Only include the settings if presented with `detailed: true` option set
 expose :settings, if: :detailed
 ```
 
