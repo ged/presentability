@@ -1,6 +1,7 @@
 pkg/
 coverage/
 docs/
+\.obsidian/
 \.lock$
 spec/\.status
 \.gem$

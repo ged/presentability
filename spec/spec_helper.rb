@@ -18,6 +18,15 @@ I18n.reload!
 
 require 'loggability/spechelpers'
 
+if !Module.respond_to?( :set_temporary_name )
+
+	Module.class_eval {
+		def set_temporary_name( tempname )
+			define_singleton_method( :name ) { tempname }
+		end
+	}
+
+end
 
 ### Mock with RSpec
 RSpec.configure do |config|

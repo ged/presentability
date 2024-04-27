@@ -56,6 +56,8 @@ your data objects that return a limited representation of their subjects.
 More details can be found in the docs for the Presentability module, and in
 Presentability::Presenter.
 
+See GettingStarted to get started with your own presenters.
+
 
 ## Prerequisites
 
@@ -88,7 +90,7 @@ This will install dependencies, and do any other necessary setup for development
 
 ## License
 
-Copyright (c) 2022, Michael Granger
+Copyright (c) 2022-2024, Michael Granger
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

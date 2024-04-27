@@ -1,3 +1,4 @@
+GettingStarted.md
 History.md
 LICENSE.txt
 Presentability.md
@@ -5,6 +6,8 @@ Presenter.md
 README.md
 lib/presentability.rb
 lib/presentability/presenter.rb
+lib/roda/plugins/presenters.rb
 spec/presentability/presenter_spec.rb
 spec/presentability_spec.rb
+spec/roda/plugins/presenters_spec.rb
 spec/spec_helper.rb

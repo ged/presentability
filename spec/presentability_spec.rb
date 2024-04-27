@@ -11,9 +11,7 @@ RSpec.describe Presentability do
 
 	let( :entity_class ) do
 		Class.new do
-			def self::name
-				return 'Acme::Entity'
-			end
+			set_temporary_name 'Acme::Entity (Testing Class)'
 
 			def initialize( foo: 1, bar: 'two', baz: :three )
 				@foo = foo
@@ -27,9 +25,7 @@ RSpec.describe Presentability do
 
 	let( :other_entity_class ) do
 		Class.new do
-			def self::name
-				return 'Acme::User'
-			end
+			set_temporary_name 'Acme::User (Testing Class)'
 
 			def initialize( firstname, lastname, email, password )
 				@firstname = firstname
@@ -45,9 +41,7 @@ RSpec.describe Presentability do
 
 	let( :complex_entity_class ) do
 		Class.new do
-			def self::name
-				return 'Acme::Pair'
-			end
+			set_temporary_name 'Acme::Pair (Testing Class)'
 
 			def initialize( user:, entity:, overridden: false, locked: true )
 				@user = user
@@ -93,7 +87,7 @@ RSpec.describe Presentability do
 
 
 		it "can define a presenter for a class name" do
-			extended_module.presenter_for( 'Acme::Entity' ) do
+			extended_module.presenter_for( entity_class.name ) do
 				expose :foo
 				expose :bar
 			end
@@ -218,10 +212,82 @@ RSpec.describe Presentability do
 		end
 
 
+		describe 'serialization' do
+
+			it "presents each element for Arrays by default" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+				end
+
+				array = 5.times.map { entity_class.new }
+
+				result = extended_module.present( array )
+
+				expect( result ).to eq( [{foo: 1}] * 5 )
+			end
+
+
+			it "presents each value for Hashes by default" do
+				extended_module.presenter_for( entity_class ) do
+					expose :foo
+				end
+
+				hash = { user1: entity_instance(), user2: entity_instance() }
+
+				result = extended_module.present( hash )
+
+				expect( result ).to eq({
+					user1: {foo: 1}, user2: {foo: 1}
+				})
+			end
+
+
+			it "presents each key for Hashes by default too" do
+				extended_module.presenter_for( entity_class ) do
+					expose :id do
+						self.subject.object_id
+					end
+				end
+
+				key1 = entity_instance()
+				key2 = entity_instance()
+				hash = { key1 => 'user1', key2 => 'user2' }
+
+				result = extended_module.present( hash )
+
+				expect( result ).to eq({
+					{id: key1.object_id} => 'user1',
+					{id: key2.object_id} => 'user2'
+				})
+			end
+
+
+			it "can be defined by class for objects that have a simple presentation" do
+				extended_module.serializer_for( IPAddr, :to_s )
+
+				object = IPAddr.new( '127.0.0.1/24' )
+
+				expect( extended_module.present(object) ).to eq( '127.0.0.0' )
+			end
+
+
+			it "can be defined by class name for objects that have a simple presentation" do
+				extended_module.serializer_for( 'IPAddr', :to_s )
+
+				object = IPAddr.new( '127.0.0.1/24' )
+
+				expect( extended_module.present(object) ).to eq( '127.0.0.0' )
+			end
+
+		end
+
+
 		it "errors usefully if asked to present an object it knows nothing about" do
 			expect {
 				extended_module.present( entity_instance )
-			}.to raise_error( NoMethodError, /no presenter found/i )
+			}.to raise_error( NoMethodError, /no presenter found/i ) do |err|
+				expect( err.backtrace.first ).to match( /#{Regexp.escape(__FILE__)}/ )
+			end
 		end
 
 

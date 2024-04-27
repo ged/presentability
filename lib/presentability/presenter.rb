@@ -120,9 +120,9 @@ class Presentability::Presenter
 
 		self.class.exposures.each do |name, exposure_options|
 			next if self.skip_exposure?( name )
+			self.log.debug "Presenting %p" % [ name ]
 			value = self.method( name ).call
-			value = presenters.present( value, **exposure_options ) unless
-				value.is_a?( result.class )
+			value = presenters.present( value, **exposure_options )
 			key = exposure_options.key?( :as ) ? exposure_options[:as] : name
 			result[ key.to_sym ] = value
 		end
