@@ -114,7 +114,7 @@ module Presentability
 
 
 	# Package version
-	VERSION = '0.5.0'
+	VERSION = '0.6.0'
 
 	# Automatically load subordinate components
 	autoload :Presenter, 'presentability/presenter'

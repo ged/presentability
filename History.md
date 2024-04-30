@@ -1,6 +1,16 @@
 # Release History for presentability
 
 ---
+
+## v0.6.0 [2024-04-29] Michael Granger <ged@faeriemud.org>
+
+Improvements:
+
+- Added custom serialization, and better collection handling
+- Added a Roda plugin
+- Improved documentation
+
+
 ## v0.5.0 [2023-11-06] Michael Granger <ged@faeriemud.org>
 
 Improvements:
