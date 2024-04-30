@@ -24,7 +24,7 @@ only the attributes you have intentionally exposed from the subject.
 
 The most basic usage looks something like this:
 
-    require 'presentatbility'
+    require 'presentability'
 
     # lib/acme/presenters.rb
     module Acme::Presenters
